@@ -4,6 +4,7 @@ public class JogoDaVelha {
 
     // Jogo da velha variaveis
     int quemJogaPrimeiro;
+    double dificuldade;
     String bolaOuX;
     String bolaOuXMaquina;
     String[] posicoes;
@@ -24,6 +25,7 @@ public class JogoDaVelha {
 
     JogoDaVelha(Scanner scanner) {
         this.quemJogaPrimeiro = 2;
+        this.dificuldade = 0.5;
         while (quemJogaPrimeiro != 0 && quemJogaPrimeiro != 1) {
             try {
                 System.out.println("Opção invalida, escolha um desses:");
@@ -101,16 +103,16 @@ public class JogoDaVelha {
         // Verificar se alguém venceu
         String resultado = escolhasDaVitoria(board);
         if (resultado.equals(this.bolaOuX)) {
-            return -10; // Vitória do jogador
+            return -5; // Vitória do jogador
         } else if (resultado.equals(this.bolaOuXMaquina)) {
-            return 10; // Vitória da máquina
+            return 15; // Vitória da máquina
         } else if (deuEmpate(board)) {
             return 0; // Empate
         }
 
         // Vez do jogador
         if (vezDoJogador) {
-            int melhorValor = -1000; // Salvamos o melhor valor da jogada para o jogador
+            int melhorValor = -100; // Salvamos o melhor valor da jogada para o jogador
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
                     board[i] = bolaOuXMaquina;
@@ -121,7 +123,7 @@ public class JogoDaVelha {
             return melhorValor;
         } else {
             // Vez da máquina
-            int melhorValor = 1000; // Salvamos o pior cenário de jogada para a máquina
+            int melhorValor = 100; // Salvamos o pior cenário de jogada para a máquina
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
                     board[i] = bolaOuX;
@@ -167,42 +169,45 @@ public class JogoDaVelha {
         return true;
     }
 
+    boolean acabouJogo() {
+        if (escolhasDaVitoria(this.posicoes) == this.bolaOuX) {
+            montarJogoDaVelha();
+            System.out.println("Vitoria do Jogador!");
+            return true;
+        } else if (escolhasDaVitoria(this.posicoes) == this.bolaOuXMaquina) {
+            montarJogoDaVelha();
+            System.out.println("Vitoria da Maquina!");
+            return true;
+        } else if (deuEmpate(this.posicoes)) {
+            montarJogoDaVelha();
+            System.out.println("Empate!");
+            return true;
+        }
+        return false;
+    }
+
     void loopJogo(Scanner scanner) {
         while (true) {
             if (this.quemJogaPrimeiro == 0) {
                 montarJogoDaVelha();
                 escolherPosicaoJogador(scanner);
-                if (escolhasDaVitoria(this.posicoes) == this.bolaOuX) {
-                    montarJogoDaVelha();
-                    System.out.println("Vitoria do Jogador!");
-                    break;
-                } else if (escolhasDaVitoria(this.posicoes) == this.bolaOuXMaquina) {
-                    montarJogoDaVelha();
-                    System.out.println("Vitoria da Maquina!");
-                    break;
-                } else if (deuEmpate(this.posicoes)) {
-                    montarJogoDaVelha();
-                    System.out.println("Empate!");
+                if (acabouJogo()) {
                     break;
                 }
                 escolherPosicaoMaquina();
+                if (acabouJogo()) {
+                    break;
+                }
             } else {
                 escolherPosicaoMaquina();
-                if (escolhasDaVitoria(this.posicoes) == this.bolaOuX) {
-                    montarJogoDaVelha();
-                    System.out.println("Vitoria do Jogador!");
-                    break;
-                } else if (escolhasDaVitoria(this.posicoes) == this.bolaOuXMaquina) {
-                    montarJogoDaVelha();
-                    System.out.println("Vitoria da Maquina!");
-                    break;
-                } else if (deuEmpate(this.posicoes)) {
-                    montarJogoDaVelha();
-                    System.out.println("Empate!");
+                if (acabouJogo()) {
                     break;
                 }
                 montarJogoDaVelha();
                 escolherPosicaoJogador(scanner);
+                if (acabouJogo()) {
+                    break;
+                }
             }
         }
     }
