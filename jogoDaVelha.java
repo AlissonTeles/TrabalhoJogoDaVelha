@@ -4,7 +4,6 @@ public class JogoDaVelha {
 
     // Jogo da velha variaveis
     int quemJogaPrimeiro;
-    double dificuldade;
     String bolaOuX;
     String bolaOuXMaquina;
     String[] posicoes;
@@ -25,7 +24,6 @@ public class JogoDaVelha {
 
     JogoDaVelha(Scanner scanner) {
         this.quemJogaPrimeiro = 2;
-        this.dificuldade = 0.5;
         while (quemJogaPrimeiro != 0 && quemJogaPrimeiro != 1) {
             try {
                 System.out.println("Opção invalida, escolha um desses:");
@@ -71,14 +69,21 @@ public class JogoDaVelha {
     // Jogador escolhe a posição
     void escolherPosicaoJogador(Scanner scanner) {
         System.out.println("Em qual posição voce quer jogar ? (Escolha de 1 a 9)");
-        int proximaPosicao = scanner.nextInt();
+        // Não pode ser fora do jogo da velha e nem dos que já tem
+        int proximaPosicao = 10;
         while ((proximaPosicao <= 0 || proximaPosicao > 9) || this.posicoes[proximaPosicao - 1] == this.bolaOuX
                 || this.posicoes[proximaPosicao - 1] == this.bolaOuXMaquina) {
-            System.out.println("Opção invalida, escolha um desses:\n");
-            montarJogoDaVelha();
-            System.out.println("Em qual posição voce quer jogar ? (Escolha de 1 a 9)");
-            proximaPosicao = scanner.nextInt();
+            try {
+                System.out.println("Opção invalida, escolha um desses:\n");
+                montarJogoDaVelha();
+                System.out.println("Em qual posição voce quer jogar ? (Escolha de 1 a 9)");
+                proximaPosicao = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) { // Caso o usuário coloque diferente de um int
+                scanner.nextLine();
+            }
         }
+
         this.posicoes[proximaPosicao - 1] = this.bolaOuX;
     }
 
@@ -99,36 +104,40 @@ public class JogoDaVelha {
         this.posicoes[melhorJogadaIndex] = this.bolaOuXMaquina;
     }
 
+    // Simula várias jogadas até encontrar a melhor possivel, fazendo por
+    // recursividade
     int melhorJogadaAtual(String[] board, Boolean vezDoJogador) {
         // Verificar se alguém venceu
         String resultado = escolhasDaVitoria(board);
         if (resultado.equals(this.bolaOuX)) {
-            return -5; // Vitória do jogador
+            return -10; // Vitória do jogador
         } else if (resultado.equals(this.bolaOuXMaquina)) {
-            return 15; // Vitória da máquina
+            return 10; // Vitória da máquina
         } else if (deuEmpate(board)) {
             return 0; // Empate
         }
 
         // Vez do jogador
         if (vezDoJogador) {
-            int melhorValor = -100; // Salvamos o melhor valor da jogada para o jogador
+            int melhorValor = -1000; // Salvamos o melhor valor da jogada para o jogador
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
-                    board[i] = bolaOuXMaquina;
+                    board[i] = bolaOuXMaquina; // simula jogada
+                    // Verifica se o jogo acabou ou n, salvando o melhor caso
                     melhorValor = Math.max(melhorValor, melhorJogadaAtual(board, !vezDoJogador));
-                    board[i] = Integer.toString(i + 1);
+                    board[i] = Integer.toString(i + 1); // desfaz
                 }
             }
             return melhorValor;
         } else {
             // Vez da máquina
-            int melhorValor = 100; // Salvamos o pior cenário de jogada para a máquina
+            int melhorValor = 1000; // Salvamos o pior cenário de jogada para a máquina
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
-                    board[i] = bolaOuX;
+                    board[i] = bolaOuX; // simula jogada
+                    // Verifica se o jogo acabou ou n, salvando o caso
                     melhorValor = Math.min(melhorValor, melhorJogadaAtual(board, !vezDoJogador));
-                    board[i] = Integer.toString(i + 1);
+                    board[i] = Integer.toString(i + 1); // desfaz
                 }
             }
             return melhorValor;
@@ -161,6 +170,7 @@ public class JogoDaVelha {
     }
 
     boolean deuEmpate(String[] board) {
+        // Olha se deu empate
         for (int i = 0; i < 9; i++) {
             if (board[i].equals(Integer.toString(i + 1))) {
                 return false;
@@ -170,6 +180,7 @@ public class JogoDaVelha {
     }
 
     boolean acabouJogo() {
+        // Verificar se teve vencedor de algum dos lados
         if (escolhasDaVitoria(this.posicoes) == this.bolaOuX) {
             montarJogoDaVelha();
             System.out.println("Vitoria do Jogador!");
@@ -187,6 +198,7 @@ public class JogoDaVelha {
     }
 
     void loopJogo(Scanner scanner) {
+        // Loop que repete até o jogo acabar
         while (true) {
             if (this.quemJogaPrimeiro == 0) {
                 montarJogoDaVelha();
