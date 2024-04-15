@@ -23,11 +23,12 @@ public class JogoDaVelha {
     // Cores de texto
     static String textYellow = "\u001B[33m";
     static String textGreen = "\u001B[32m";
+    static String textRed = "\u001B[31m";
 
     JogoDaVelha(Scanner scanner) {
         System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
         while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println("Opção inválida, escolha um desses:");
+            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
             System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
             scanner.nextLine(); // Limpa a entrada inválida
         }
@@ -35,7 +36,7 @@ public class JogoDaVelha {
         scanner.nextLine(); // Limpa o restante da linha
         while (dificuldade != 1 && dificuldade != 2 && dificuldade != 3) {
             try {
-                System.out.println("Opção inválida, escolha um desses:");
+                System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
                 System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
                 this.dificuldade = scanner.nextInt();
                 scanner.nextLine(); // Limpa o restante da linha
@@ -46,7 +47,7 @@ public class JogoDaVelha {
 
         System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
         while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println("Opção inválida, escolha um desses:");
+            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
             System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
             scanner.nextLine(); // Limpa a entrada inválida
         }
@@ -54,7 +55,7 @@ public class JogoDaVelha {
         scanner.nextLine(); // Limpa o restante da linha
         while (quemJogaPrimeiro != 0 && quemJogaPrimeiro != 1) {
             try {
-                System.out.println("Opção inválida, escolha um desses:");
+                System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
                 System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
                 this.quemJogaPrimeiro = scanner.nextInt();
                 scanner.nextLine(); // Limpa o restante da linha
@@ -66,7 +67,7 @@ public class JogoDaVelha {
         System.out.println("Você quer ser o X ou a O ?");
         this.bolaOuX = scanner.nextLine();
         while (!bolaOuX.equals("X") && !bolaOuX.equals("O")) {
-            System.out.println("Opção inválida, escolha um desses:");
+            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
             System.out.println("Você quer ser o X ou a O ?");
             this.bolaOuX = scanner.nextLine(); // Limpa o restante da linha
         }
@@ -101,7 +102,7 @@ public class JogoDaVelha {
         int proximaPosicao = 10;
         System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
         while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println("Opção inválida, escolha um desses:\n");
+            System.out.println(textYellow + "Opção inválida, escolha um desses:\n" + textColorReset);
             montarJogoDaVelha();
             System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
             scanner.nextLine(); // Limpa a entrada inválida
@@ -111,7 +112,7 @@ public class JogoDaVelha {
         while ((proximaPosicao <= 0 || proximaPosicao > 9) || this.posicoes[proximaPosicao - 1] == this.bolaOuX
                 || this.posicoes[proximaPosicao - 1] == this.bolaOuXMaquina) {
             try {
-                System.out.println("Opção inválida, escolha um desses:\n");
+                System.out.println(textYellow + "Opção inválida, escolha um desses:\n" + textColorReset);
                 montarJogoDaVelha();
                 System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
                 proximaPosicao = scanner.nextInt();
@@ -127,7 +128,7 @@ public class JogoDaVelha {
     // Máquina faz uma busca para saber qual a melhor jogada no momento
     void escolherPosicaoMaquina() {
         int melhorJogadaIndex = 0;
-        int melhorJogadaPossivel = -1;
+        int melhorJogadaPossivel = -100;
         melhorJogadaIndex = medirDificuldade(posicoes, melhorJogadaIndex, melhorJogadaPossivel);
         this.posicoes[melhorJogadaIndex] = this.bolaOuXMaquina;
     }
@@ -138,7 +139,6 @@ public class JogoDaVelha {
         int randomPlay = 0;
         // Se for 1 sempre faz jogadas randomicamente
         if (this.dificuldade == 1) {
-            System.out.println(gerador.nextInt(9));
             randomPlay = gerador.nextInt(9);
             while (posicoes[randomPlay].equals("X") || posicoes[randomPlay].equals("O")) {
                 randomPlay = gerador.nextInt(9);
@@ -147,22 +147,18 @@ public class JogoDaVelha {
         }
         // Se for 2, tem 50% de fazer uma jogadas randomicamente
         if (this.dificuldade == 2) {
-            System.out.println(gerador.nextInt(2));
             if (gerador.nextInt(2) == 1) {
-                System.out.println(gerador.nextInt(9));
                 randomPlay = gerador.nextInt(9);
-                randomPlay = 1;
                 while (posicoes[randomPlay].equals("X") || posicoes[randomPlay].equals("O")) {
-                    System.out.println(posicoes[randomPlay]);
                     randomPlay = gerador.nextInt(9);
                 }
                 return randomPlay;
             } else {
-                for (int i = 0; i < this.posicoes.length; i++) {
+                for (int i = 0; i < posicoes.length; i++) {
                     if (posicoes[i].equals(Integer.toString(i + 1))) {
-                        this.posicoes[i] = this.bolaOuXMaquina;
-                        int melhorJogada = melhorJogadaAtual(posicoes, false);
-                        this.posicoes[i] = Integer.toString(i + 1);
+                        posicoes[i] = this.bolaOuXMaquina;
+                        int melhorJogada = melhorJogadaAtual(posicoes, false, 0);
+                        posicoes[i] = Integer.toString(i + 1);
                         if (melhorJogada > melhorJogadaPossivel) {
                             melhorJogadaPossivel = melhorJogada;
                             melhorJogadaIndex = i;
@@ -174,11 +170,11 @@ public class JogoDaVelha {
         }
         // Se for 3 ele sempre faz a busca em profundidade/largura para fazer a jogada
         if (this.dificuldade == 3) {
-            for (int i = 0; i < this.posicoes.length; i++) {
+            for (int i = 0; i < posicoes.length; i++) {
                 if (posicoes[i].equals(Integer.toString(i + 1))) {
-                    this.posicoes[i] = this.bolaOuXMaquina;
-                    int melhorJogada = melhorJogadaAtual(posicoes, false);
-                    this.posicoes[i] = Integer.toString(i + 1);
+                    posicoes[i] = this.bolaOuXMaquina;
+                    int melhorJogada = melhorJogadaAtual(posicoes, false, 0);
+                    posicoes[i] = Integer.toString(i + 1);
                     if (melhorJogada > melhorJogadaPossivel) {
                         melhorJogadaPossivel = melhorJogada;
                         melhorJogadaIndex = i;
@@ -192,13 +188,13 @@ public class JogoDaVelha {
 
     // Simula várias jogadas até encontrar a melhor possivel, fazendo por
     // recursividade
-    int melhorJogadaAtual(String[] board, Boolean vezDoJogador) {
+    int melhorJogadaAtual(String[] board, Boolean vezDoJogador, int profundidade) {
         // Verificar se alguém venceu
         String resultado = escolhasDaVitoria(board);
-        if (resultado.equals(this.bolaOuX)) {
-            return -10; // Vitória do jogador
-        } else if (resultado.equals(this.bolaOuXMaquina)) {
-            return 10; // Vitória da máquina
+        if (resultado.equals(this.bolaOuXMaquina)) {
+            return 10 - profundidade; // Vitória da máquina
+        } else if (resultado.equals(this.bolaOuX)) {
+            return -10 + profundidade; // Vitória do jogador
         } else if (deuEmpate(board)) {
             return 0; // Empate
         }
@@ -209,8 +205,8 @@ public class JogoDaVelha {
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
                     board[i] = bolaOuXMaquina; // simula jogada
-                    // Verifica se o jogo acabou ou n, salvando o melhor caso
-                    melhorValor = Math.max(melhorValor, melhorJogadaAtual(board, !vezDoJogador));
+                    // Verifica se o jogo acabou ou não, salvando o melhor caso
+                    melhorValor = Math.max(melhorValor, melhorJogadaAtual(board, !vezDoJogador, profundidade + 1));
                     board[i] = Integer.toString(i + 1); // desfaz
                 }
             }
@@ -221,8 +217,8 @@ public class JogoDaVelha {
             for (int i = 0; i < 9; i++) {
                 if (board[i].equals(Integer.toString(i + 1))) {
                     board[i] = bolaOuX; // simula jogada
-                    // Verifica se o jogo acabou ou n, salvando o caso
-                    melhorValor = Math.min(melhorValor, melhorJogadaAtual(board, !vezDoJogador));
+                    // Verifica se o jogo acabou ou não, salvando o caso
+                    melhorValor = Math.min(melhorValor, melhorJogadaAtual(board, !vezDoJogador, profundidade + 1));
                     board[i] = Integer.toString(i + 1); // desfaz
                 }
             }
@@ -231,7 +227,7 @@ public class JogoDaVelha {
     }
 
     // Verifica se alguem ganhou
-    String escolhasDaVitoria(String teste[]) {
+    String escolhasDaVitoria(String board[]) {
 
         // Verifica cada combinação de vitória
         for (int[] combinacao : this.combinacoesVitoria) {
@@ -240,14 +236,14 @@ public class JogoDaVelha {
             int posicao3 = combinacao[2];
 
             // Verifica se todas as posições têm o mesmo valor (X ou O)
-            if (teste[posicao1].equals(this.bolaOuX) &&
-                    teste[posicao2].equals(this.bolaOuX) &&
-                    teste[posicao3].equals(this.bolaOuX)) {
+            if (board[posicao1].equals(this.bolaOuX) &&
+                    board[posicao2].equals(this.bolaOuX) &&
+                    board[posicao3].equals(this.bolaOuX)) {
                 return this.bolaOuX;
             }
-            if (teste[posicao1].equals(this.bolaOuXMaquina) &&
-                    teste[posicao2].equals(this.bolaOuXMaquina) &&
-                    teste[posicao3].equals(this.bolaOuXMaquina)) {
+            if (board[posicao1].equals(this.bolaOuXMaquina) &&
+                    board[posicao2].equals(this.bolaOuXMaquina) &&
+                    board[posicao3].equals(this.bolaOuXMaquina)) {
                 return this.bolaOuXMaquina;
             }
 
@@ -259,7 +255,7 @@ public class JogoDaVelha {
         // Conta quantas posições estão ocupadas
         int ocupadas = 0;
         for (String posicao : board) {
-            if (posicao.equals("X") || posicao.equals("O")) {
+            if (posicao.equals(this.bolaOuX) || posicao.equals(this.bolaOuXMaquina)) {
                 ocupadas++;
             }
         }
@@ -272,15 +268,15 @@ public class JogoDaVelha {
         // Verificar se teve vencedor de algum dos lados
         if (escolhasDaVitoria(this.posicoes) == this.bolaOuX) {
             montarJogoDaVelha();
-            System.out.println("Vitória do Jogador!");
+            System.out.println(textGreen + "Vitória do Jogador!" + textColorReset);
             return true;
         } else if (escolhasDaVitoria(this.posicoes) == this.bolaOuXMaquina) {
             montarJogoDaVelha();
-            System.out.println("Vitória da Maquina!");
+            System.out.println(textRed + "Vitória da Máquina!" + textColorReset);
             return true;
         } else if (deuEmpate(this.posicoes)) {
             montarJogoDaVelha();
-            System.out.println("Empate!");
+            System.out.println(textYellow + "Empate!" + textColorReset);
             return true;
         }
         return false;
@@ -327,7 +323,12 @@ public class JogoDaVelha {
 
             System.out.println("Deseja jogar novamente? (S/N)");
             String jogarNovamente = scanner.nextLine();
-            if (!jogarNovamente.equalsIgnoreCase("S")) {
+            while (!jogarNovamente.equals("N") && !jogarNovamente.equals("S")) {
+                System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
+                System.out.println("Deseja jogar novamente? (S/N)");
+                jogarNovamente = scanner.nextLine(); // Limpa o restante da linha
+            }
+            if (!jogarNovamente.equals("S")) {
                 System.out.println(textGreen + "Obrigado por jogar!" + textColorReset);
                 break;
             }
