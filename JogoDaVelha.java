@@ -1,13 +1,12 @@
 import java.util.*;
 
 public class JogoDaVelha {
-
-    // Jogo da velha variaveis
-    int dificuldade;
-    int quemJogaPrimeiro;
-    String bolaOuX;
-    String bolaOuXMaquina;
-    String[] posicoes;
+    // Variáveis do jogo da velha
+    int dificuldade; // Nível de dificuldade do jogo
+    int quemJogaPrimeiro; // Quem joga primeiro (0 para jogador, 1 para máquina)
+    String bolaOuX; // Símbolo escolhido pelo jogador (X ou O)
+    String bolaOuXMaquina; // Símbolo da máquina (oposto ao do jogador)
+    String[] posicoes; // Posições do tabuleiro
     int[][] combinacoesVitoria = {
             { 0, 1, 2 }, // Linha 1
             { 3, 4, 5 }, // Linha 2
@@ -18,70 +17,86 @@ public class JogoDaVelha {
             { 0, 4, 8 }, // Diagonal principal
             { 2, 4, 6 } // Diagonal secundária
     };
-    // Cor de texto padrão
-    static String textColorReset = "\u001B[0m";
+
     // Cores de texto
-    static String textYellow = "\u001B[33m";
-    static String textGreen = "\u001B[32m";
-    static String textRed = "\u001B[31m";
+    static String textColorReset = "\u001B[0m"; // Resetar cor
+    static String textYellow = "\u001B[33m"; // Amarelo
+    static String textGreen = "\u001B[32m"; // Verde
+    static String textRed = "\u001B[31m"; // Vermelho
 
+    // Método construtor
     JogoDaVelha(Scanner scanner) {
-        System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
-        while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
-            System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
-            scanner.nextLine(); // Limpa a entrada inválida
-        }
-        this.dificuldade = scanner.nextInt();
-        scanner.nextLine(); // Limpa o restante da linha
-        while (dificuldade != 1 && dificuldade != 2 && dificuldade != 3) {
+        // Configuração inicial do jogo (dificuldade, quem joga primeiro, símbolo
+        // escolhido)
+        configurarJogo(scanner);
+        // Inicialização do tabuleiro
+        inicializarTabuleiro();
+    }
+
+    // Configuração inicial do jogo
+    void configurarJogo(Scanner scanner) {
+        // Definir nível de dificuldade
+        definirDificuldade(scanner);
+        // Definir quem joga primeiro
+        definirJogadorInicial(scanner);
+        // Escolher símbolo (X ou O)
+        escolherSimbolo(scanner);
+    }
+
+    // Definir nível de dificuldade
+    void definirDificuldade(Scanner scanner) {
+        System.out.println("Qual o nível de dificuldade? (Fácil: 1, Médio: 2, Difícil: 3)");
+        while (true) {
             try {
-                System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
-                System.out.println("Qual o nível de dificuldade ? (Fácil: 1, Médio: 2, Difícil: 3)");
-                this.dificuldade = scanner.nextInt();
-                scanner.nextLine(); // Limpa o restante da linha
-            } catch (InputMismatchException e) { // Caso o usuário coloque diferente de um int
+                dificuldade = scanner.nextInt();
+                if (dificuldade >= 1 && dificuldade <= 3) {
+                    break; // Saí do loop se a entrada for válida
+                }
+                System.out.println(textYellow + "Opção inválida. Escolha 1, 2 ou 3." + textColorReset);
+            } catch (InputMismatchException e) {
+                System.out.println(textYellow + "Opção inválida. Escolha 1, 2 ou 3." + textColorReset);
                 scanner.nextLine(); // Limpa a entrada inválida
             }
         }
-
-        System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
-        while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
-            System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
-            scanner.nextLine(); // Limpa a entrada inválida
-        }
-        this.quemJogaPrimeiro = scanner.nextInt();
         scanner.nextLine(); // Limpa o restante da linha
-        while (quemJogaPrimeiro != 0 && quemJogaPrimeiro != 1) {
+    }
+
+    // Definir quem joga primeiro
+    void definirJogadorInicial(Scanner scanner) {
+        System.out.println("Quem joga primeiro? (Máquina: 1, Jogador: 0)");
+        while (true) {
             try {
-                System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
-                System.out.println("Quem joga primeiro ? (Máquina: 1, Jogador: 0)");
-                this.quemJogaPrimeiro = scanner.nextInt();
-                scanner.nextLine(); // Limpa o restante da linha
-            } catch (InputMismatchException e) { // Caso o usuário coloque diferente de um int
+                quemJogaPrimeiro = scanner.nextInt();
+                if (quemJogaPrimeiro == 0 || quemJogaPrimeiro == 1) {
+                    break; // Saí do loop se a entrada for válida
+                }
+                System.out.println(textYellow + "Opção inválida. Escolha 0 ou 1." + textColorReset);
+            } catch (InputMismatchException e) {
+                System.out.println(textYellow + "Opção inválida. Escolha 0 ou 1." + textColorReset);
                 scanner.nextLine(); // Limpa a entrada inválida
             }
         }
+        scanner.nextLine(); // Limpa o restante da linha
+    }
 
-        System.out.println("Você quer ser o X ou a O ?");
-        this.bolaOuX = scanner.nextLine();
-        while (!bolaOuX.equals("X") && !bolaOuX.equals("O")) {
-            System.out.println(textYellow + "Opção inválida, escolha um desses:" + textColorReset);
-            System.out.println("Você quer ser o X ou a O ?");
-            this.bolaOuX = scanner.nextLine(); // Limpa o restante da linha
+    // Escolher símbolo (X ou O)
+    void escolherSimbolo(Scanner scanner) {
+        System.out.println("Você quer ser o X ou a O?");
+        while (true) {
+            bolaOuX = scanner.nextLine().toUpperCase();
+            if (bolaOuX.equals("X") || bolaOuX.equals("O")) {
+                break; // Saí do loop se a entrada for válida
+            }
+            System.out.println(textYellow + "Opção inválida. Escolha X ou O." + textColorReset);
         }
+        bolaOuXMaquina = (bolaOuX.equals("X")) ? "O" : "X"; // Símbolo oposto ao escolhido pelo jogador
+    }
 
-        if (this.bolaOuX.equals("X")) {
-            this.bolaOuXMaquina = "O";
-        } else {
-            this.bolaOuXMaquina = "X";
-        }
-
-        // Cria as posições do jogo da velha
-        this.posicoes = new String[9];
+    // Inicializar tabuleiro
+    void inicializarTabuleiro() {
+        posicoes = new String[9];
         for (int i = 0; i < 9; i++) {
-            this.posicoes[i] = Integer.toString(i + 1);
+            posicoes[i] = Integer.toString(i + 1);
         }
     }
 
@@ -98,27 +113,28 @@ public class JogoDaVelha {
 
     // Jogador escolhe a posição
     void escolherPosicaoJogador(Scanner scanner) {
-        // Não pode ser fora do jogo da velha e nem dos que já tem
-        int proximaPosicao = 10;
-        System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
-        while (!scanner.hasNextInt()) { // verifica se não for um inteiro
-            System.out.println(textYellow + "Opção inválida, escolha um desses:\n" + textColorReset);
-            montarJogoDaVelha();
-            System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
-            scanner.nextLine(); // Limpa a entrada inválida
-        }
-        proximaPosicao = scanner.nextInt();
-        scanner.nextLine(); // Limpa o restante da linha
-        while ((proximaPosicao <= 0 || proximaPosicao > 9) || this.posicoes[proximaPosicao - 1] == this.bolaOuX
-                || this.posicoes[proximaPosicao - 1] == this.bolaOuXMaquina) {
-            try {
-                System.out.println(textYellow + "Opção inválida, escolha um desses:\n" + textColorReset);
+        int proximaPosicao = 0;
+        System.out.println("Em qual posição você quer jogar? (Escolha de 1 a 9)");
+        while (true) {
+            while (!scanner.hasNextInt()) {
+                System.out.println(textYellow + "Opção inválida. Escolha um número de 1 a 9." + textColorReset);
                 montarJogoDaVelha();
-                System.out.println("Em qual posição você quer jogar ? (Escolha de 1 a 9)");
-                proximaPosicao = scanner.nextInt();
-                scanner.nextLine();
-            } catch (InputMismatchException e) { // Caso o usuário coloque diferente de um int
-                scanner.nextLine();
+                System.out.println("Em qual posição você quer jogar? (Escolha de 1 a 9)");
+                scanner.nextLine(); // Limpa a entrada inválida
+            }
+            proximaPosicao = scanner.nextInt();
+            scanner.nextLine(); // Limpa o restante da linha
+
+            // Verifica se é uma jogada válida
+            if (proximaPosicao >= 1 && proximaPosicao <= 9 &&
+                    !this.posicoes[proximaPosicao - 1].equals(this.bolaOuX) &&
+                    !this.posicoes[proximaPosicao - 1].equals(this.bolaOuXMaquina)) {
+                break; // Saí do loop se a posição for válida
+            } else {
+                System.out.println(
+                        textYellow + "Posição inválida ou já ocupada. Escolha outra posição." + textColorReset);
+                montarJogoDaVelha();
+                System.out.println("Em qual posição você quer jogar? (Escolha de 1 a 9)");
             }
         }
 
